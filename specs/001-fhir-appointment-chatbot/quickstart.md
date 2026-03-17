@@ -97,3 +97,5 @@ pytest tests/ -v
 - [ ] Frontend displays chat interface
 - [ ] Patient can ask about appointments in Spanish
 - [ ] All tests pass
+- [ ] SC-004: End-to-end response time < 10 seconds (manual: time a chat request)
+- [ ] SC-005: Intent accuracy ≥ 90% (manual: test 10 varied intents, ≥ 9 correct on first attempt)

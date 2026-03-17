@@ -46,7 +46,7 @@ uvicorn app.main:app --reload --port 8000
 cd backend && pytest tests/ -v
 
 # Frontend (servir estático)
-cd frontend && python -m http.server 3000
+cd frontend && python -m http.server 5173
 ```
 
 ## Estilo de código

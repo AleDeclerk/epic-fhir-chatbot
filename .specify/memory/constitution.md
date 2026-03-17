@@ -33,9 +33,10 @@ and the FHIR data access layer. Specifically:
   the FHIR operation.
 - The `fhir_client.py` module MUST be usable independently of the
   Claude agent (no agent imports, no agent-specific logic).
-- The backend MUST be stateless for the MVP: each request from the
-  frontend includes the full conversation history. No server-side
-  session storage.
+- The backend MUST be stateless for chat context: each request from
+  the frontend includes the full conversation history. No server-side
+  chat state storage. OAuth session tokens are the sole exception
+  and are stored in-memory for the MVP.
 - The frontend MUST NOT access Epic FHIR directly; all FHIR
   communication goes through the backend API.
 

@@ -71,7 +71,7 @@ See research.md R1 for fallback strategy.
 | description  | Appointment.description      | string    | Reason for visit       |
 
 **Search**: `GET /Appointment?patient={id}&date=ge{today}&status=booked`
-**Create**: `POST /Appointment` with status=booked
+**Create**: `POST /Appointment/$book` with Parameters wrapper (Argonaut Scheduling IG)
 **Cancel**: `PUT /Appointment/{id}` with status=cancelled
 
 ## State Transitions
@@ -82,7 +82,7 @@ See research.md R1 for fallback strategy.
 [none] --book--> booked --cancel--> cancelled
 ```
 
-- `booked`: Active appointment. Created via `POST /Appointment`.
+- `booked`: Active appointment. Created via `POST /Appointment/$book`.
 - `cancelled`: Cancelled by patient. Updated via `PUT /Appointment/{id}`
   with `status: "cancelled"`.
 
@@ -106,7 +106,6 @@ They decouple the application from raw FHIR JSON.
 ### ChatResponse
 
 - `message`: string (chatbot's response)
-- `tool_calls`: list[ToolCallInfo] (optional, for logging)
 
 ### SlotInfo
 

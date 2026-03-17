@@ -52,7 +52,7 @@ history and returns the chatbot's response.
 Initiates the SMART on FHIR OAuth flow. Redirects the browser to
 Epic's authorization endpoint.
 
-**Response**: 302 redirect to Epic authorize URL.
+**Response**: 307 redirect to Epic authorize URL.
 
 ### GET /auth/callback
 
@@ -66,7 +66,7 @@ authenticates.
 | code  | string | Authorization code from Epic       |
 | state | string | Must match the original state      |
 
-**Response**: 302 redirect to frontend with session cookie set.
+**Response**: 307 redirect to frontend with session cookie set.
 
 ### GET /auth/status
 

@@ -40,9 +40,9 @@ The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc
 
 **Purpose**: Create directory structure and install dependencies
 
-- [ ] T001 Create project directory structure per plan.md: backend/app/, backend/app/routes/, backend/tests/, frontend/
-- [ ] T002 [P] Initialize Python project with requirements.txt in backend/ (fastapi, uvicorn, httpx, pydantic, pydantic-settings, python-dotenv, anthropic, pytest, pytest-asyncio, pytest-httpx)
-- [ ] T003 [P] Create .gitignore (include .env, __pycache__, .venv, *.pyc) and .env.example with all required variables per quickstart.md
+- [x] T001 Create project directory structure per plan.md: backend/app/, backend/app/routes/, backend/tests/, frontend/
+- [x] T002 [P] Initialize Python project with requirements.txt in backend/ (fastapi, uvicorn, httpx, pydantic, pydantic-settings, python-dotenv, anthropic, pytest, pytest-asyncio, pytest-httpx)
+- [x] T003 [P] Create .gitignore (include .env, __pycache__, .venv, *.pyc) and .env.example with all required variables per quickstart.md
 
 ---
 
@@ -52,16 +52,16 @@ The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Create shared test fixtures in backend/tests/conftest.py (async test client, mock settings, mock httpx transport, mock session with patient_id and access_token)
-- [ ] T005 Write failing tests for Settings class in backend/tests/test_config.py (TDD Red: test env var loading for EPIC_FHIR_BASE_URL, EPIC_CLIENT_ID, ANTHROPIC_API_KEY, all fields from quickstart.md)
-- [ ] T006 Implement Settings class using Pydantic Settings in backend/app/config.py (TDD Green: load all env vars, provide defaults where appropriate)
-- [ ] T007 [P] Write failing tests for Pydantic models in backend/tests/test_models.py (TDD Red: test ChatMessage, ChatRequest with max 20 history, ChatResponse, SlotInfo, AppointmentInfo, TokenData per data-model.md)
-- [ ] T008 [P] Implement all Pydantic models in backend/app/models.py (TDD Green: ChatMessage, ChatRequest, ChatResponse, SlotInfo, AppointmentInfo, TokenData with validation)
-- [ ] T009 [SKILL:epic-fhir] Write failing tests for OAuth auth module in backend/tests/test_auth.py (TDD Red: test login redirect URL generation with PKCE, callback token exchange, status endpoint, logout, token refresh, expired token handling) — Ref: SKILL.md "OAuth 2.0 — Standalone Launch Flow" + references/scheduling-flows.md "OAuth Callback Handler"
-- [ ] T010 [SKILL:epic-fhir] Implement OAuth 2.0 SMART on FHIR in backend/app/auth.py (TDD Green: login redirect with PKCE+state, callback exchanges code for tokens, extracts patient FHIR ID, session management, token refresh, /auth/status, /auth/logout) — Ref: SKILL.md "OAuth 2.0 — Standalone Launch Flow" + "OAuth Pitfalls" (aud param, redirect_uri match, scope silently dropped)
-- [ ] T011 [SKILL:epic-fhir] Write failing tests for FHIR client base in backend/tests/test_fhir_client.py (TDD Red: test httpx client init, Authorization header injection, error handling for 4xx/5xx, 429 retry once, structured logging without tokens, timeout at 30s) — Ref: references/scheduling-flows.md "FHIR Client Base" (EpicFHIRClient class, custom exceptions FHIRError/FHIRAuthError/FHIRNotFoundError/FHIRRateLimitError)
-- [ ] T012 [SKILL:epic-fhir] Implement FHIR client base class in backend/app/fhir_client.py (TDD Green: async httpx client, auth header from session token, error handling, 1 retry on 429, logging via logging module excluding tokens, 30s timeout) — Ref: references/scheduling-flows.md "FHIR Client Base" (full class implementation with _get/_post/_put/_extract_entries)
-- [ ] T013 Implement FastAPI app shell in backend/app/main.py (app factory, CORS for FRONTEND_URL, rate limiting middleware, include auth routes from auth.py, lifespan handler)
+- [x] T004 Create shared test fixtures in backend/tests/conftest.py (async test client, mock settings, mock httpx transport, mock session with patient_id and access_token)
+- [x] T005 Write failing tests for Settings class in backend/tests/test_config.py (TDD Red: test env var loading for EPIC_FHIR_BASE_URL, EPIC_CLIENT_ID, ANTHROPIC_API_KEY, all fields from quickstart.md)
+- [x] T006 Implement Settings class using Pydantic Settings in backend/app/config.py (TDD Green: load all env vars, provide defaults where appropriate)
+- [x] T007 [P] Write failing tests for Pydantic models in backend/tests/test_models.py (TDD Red: test ChatMessage, ChatRequest with max 20 history, ChatResponse, SlotInfo, AppointmentInfo, TokenData per data-model.md)
+- [x] T008 [P] Implement all Pydantic models in backend/app/models.py (TDD Green: ChatMessage, ChatRequest, ChatResponse, SlotInfo, AppointmentInfo, TokenData with validation)
+- [x] T009 [SKILL:epic-fhir] Write failing tests for OAuth auth module in backend/tests/test_auth.py (TDD Red: test login redirect URL generation with PKCE, callback token exchange with code_verifier, status endpoint, logout, expired token handling) — Ref: SKILL.md "OAuth 2.0 — Standalone Launch Flow" + references/scheduling-flows.md "OAuth Callback Handler"
+- [x] T010 [SKILL:epic-fhir] Implement OAuth 2.0 SMART on FHIR in backend/app/auth.py (TDD Green: login redirect with PKCE+state, callback exchanges code for tokens with code_verifier, extracts patient FHIR ID, fetches patient name via GET /Patient, session management, /auth/status, /auth/logout) — Ref: SKILL.md "OAuth 2.0 — Standalone Launch Flow" + "OAuth Pitfalls" (aud param, redirect_uri match, scope silently dropped). Note: OAuth refresh_token flow deferred to post-MVP; on expiry the backend returns 401.
+- [x] T011 [SKILL:epic-fhir] Write failing tests for FHIR client base in backend/tests/test_fhir_client.py (TDD Red: test httpx client init, Authorization header injection, error handling for 4xx/5xx, 429 retry once, structured logging without tokens, timeout at 30s) — Ref: references/scheduling-flows.md "FHIR Client Base" (EpicFHIRClient class, custom exceptions FHIRError/FHIRAuthError/FHIRNotFoundError/FHIRRateLimitError)
+- [x] T012 [SKILL:epic-fhir] Implement FHIR client base class in backend/app/fhir_client.py (TDD Green: async httpx client, auth header from session token, error handling, 1 retry on 429, logging via logging module excluding tokens, 30s timeout) — Ref: references/scheduling-flows.md "FHIR Client Base" (full class implementation with _get/_post/_put/_extract_entries)
+- [x] T013 Implement FastAPI app shell in backend/app/main.py (app factory, CORS for FRONTEND_URL, rate limiting middleware, include auth routes from auth.py, lifespan handler)
 
 **Checkpoint**: Foundation ready — config, models, auth, FHIR client base, and app shell all tested and working. User story implementation can now begin.
 
@@ -77,18 +77,18 @@ The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc
 
 > **TDD: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T014 [US1] [SKILL:epic-fhir] Add failing tests for list_appointments() to backend/tests/test_fhir_client.py (TDD Red: mock GET /Appointment?patient={id}&date=ge{today}&date=le{today+90d}&status=booked, test with results, empty results, FHIR error, parse participant to extract practitioner name) — Ref: references/endpoints.md "Appointment.Search" (query params, example response with participant array)
-- [ ] T015 [P] [US1] Write failing tests for list_appointments tool handler in backend/tests/test_tools.py (TDD Red: test tool receives patient_id from session, calls fhir_client.list_appointments, returns formatted AppointmentInfo list, test error wrapping)
-- [ ] T016 [P] [US1] Write failing tests for agent orchestrator in backend/tests/test_agent.py (TDD Red: test system prompt in Spanish with XML tags, test agentic loop with list_appointments tool_use -> tool_result -> end_turn, test tool_use/tool_result message structure, mock anthropic client)
-- [ ] T017 [P] [US1] Write failing tests for POST /api/chat in backend/tests/test_chat.py (TDD Red: test 200 with valid session + message, test 401 without session, test 422 with invalid body, test history capped at 20 messages)
+- [x] T014 [US1] [SKILL:epic-fhir] Add failing tests for list_appointments() to backend/tests/test_fhir_client.py (TDD Red: mock GET /Appointment?patient={id}&date=ge{today}&date=le{today+90d}&status=booked, test with results, empty results, FHIR error, parse participant to extract practitioner name) — Ref: references/endpoints.md "Appointment.Search" (query params, example response with participant array)
+- [x] T015 [P] [US1] Write failing tests for list_appointments tool handler in backend/tests/test_tools.py (TDD Red: test tool receives patient_id from session, calls fhir_client.list_appointments, returns formatted AppointmentInfo list, test error wrapping)
+- [x] T016 [P] [US1] Write failing tests for agent orchestrator in backend/tests/test_agent.py (TDD Red: test system prompt in Spanish with XML tags, test agentic loop with list_appointments tool_use -> tool_result -> end_turn, test tool_use/tool_result message structure, mock anthropic client)
+- [x] T017 [P] [US1] Write failing tests for POST /api/chat in backend/tests/test_chat.py (TDD Red: test 200 with valid session + message, test 401 without session, test 422 with invalid body, test history capped at 20 messages)
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] [SKILL:epic-fhir] Implement list_appointments() in backend/app/fhir_client.py (TDD Green: GET /Appointment with patient, date range 90 days, status=booked, parse FHIR Bundle into AppointmentInfo list, extract practitioner name from participant) — Ref: references/scheduling-flows.md "List Patient Appointments" (search_appointments + _extract_entries pattern)
-- [ ] T019 [US1] Implement list_appointments tool handler in backend/app/tools.py (TDD Green: define tool JSON schema per contracts/api.md, handler calls fhir_client.list_appointments with session patient_id, formats result as string)
-- [ ] T020 [US1] Implement Claude agent orchestrator in backend/app/agent.py (TDD Green: system prompt in Spanish with XML sections per research.md R7, tool definitions array with list_appointments, agentic loop: send messages -> check stop_reason -> execute tools -> return, 60s timeout for Claude API)
-- [ ] T021 [US1] Implement POST /api/chat endpoint in backend/app/routes/chat.py (TDD Green: validate ChatRequest, check session auth, cap history at 20, call agent.process_message, return ChatResponse, handle errors with friendly messages per FR-011)
-- [ ] T022 [US1] Wire chat route into main.py and create frontend/index.html (React 18 SPA via CDN: chat UI with message input, message list, login/logout buttons, calls /auth/login for OAuth, calls POST /api/chat with history, caps history at 20 messages per FR-016, Tailwind CSS styling)
+- [x] T018 [US1] [SKILL:epic-fhir] Implement list_appointments() in backend/app/fhir_client.py (TDD Green: GET /Appointment with patient, date range 90 days, status=booked, parse FHIR Bundle into AppointmentInfo list, extract practitioner name from participant) — Ref: references/scheduling-flows.md "List Patient Appointments" (search_appointments + _extract_entries pattern)
+- [x] T019 [US1] Implement list_appointments tool handler in backend/app/tools.py (TDD Green: define tool JSON schema per contracts/api.md, handler calls fhir_client.list_appointments with session patient_id, formats result as string)
+- [x] T020 [US1] Implement Claude agent orchestrator in backend/app/agent.py (TDD Green: system prompt in Spanish with XML sections per research.md R7, tool definitions array with list_appointments, agentic loop: send messages -> check stop_reason -> execute tools -> return, 60s timeout for Claude API)
+- [x] T021 [US1] Implement POST /api/chat endpoint in backend/app/routes/chat.py (TDD Green: validate ChatRequest, check session auth, cap history at 20, call agent.process_message, return ChatResponse, handle errors with friendly messages per FR-011)
+- [x] T022 [US1] Wire chat route into main.py and create frontend/index.html (React 18 SPA via CDN: chat UI with message input, message list, login/logout buttons, calls /auth/login for OAuth, calls POST /api/chat with history, caps history at 20 messages per FR-016, Tailwind CSS styling)
 
 **Checkpoint**: US1 fully functional. Patient can authenticate, ask about appointments, and see formatted results. End-to-end pipeline proven.
 
@@ -104,15 +104,15 @@ The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc
 
 > **TDD: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T023 [US2] [SKILL:epic-fhir] Add failing tests for search_practitioners() and search_slots() to backend/tests/test_fhir_client.py (TDD Red: mock GET /Practitioner?name={name}, mock GET /PractitionerRole?specialty={code}, mock GET /Schedule?actor=Practitioner/{id}, mock GET /Slot?schedule={id}&status=free&start=ge{date}, test fallback if Slot.Search returns 404 per research.md R1, test empty results) — Ref: references/endpoints.md "Practitioner.Search", "Schedule.Search", "Slot.Search" (query params, date prefix syntax ge/le, example responses)
-- [ ] T024 [P] [US2] Add failing tests for search_available_slots tool in backend/tests/test_tools.py (TDD Red: test with practitioner_name, test with specialty, test date_from required, test results capped at 5 per FR-004, test "show more" offset parameter, test no results message)
+- [x] T023 [US2] [SKILL:epic-fhir] Add failing tests for search_practitioners() and search_slots() to backend/tests/test_fhir_client.py (TDD Red: mock GET /Practitioner?name={name}, mock GET /PractitionerRole?specialty={code}, mock GET /Schedule?actor=Practitioner/{id}, mock GET /Slot?schedule={id}&status=free&start=ge{date}, test fallback if Slot.Search returns 404 per research.md R1, test empty results) — Ref: references/endpoints.md "Practitioner.Search", "Schedule.Search", "Slot.Search" (query params, date prefix syntax ge/le, example responses)
+- [x] T024 [P] [US2] Add failing tests for search_available_slots tool in backend/tests/test_tools.py (TDD Red: test with practitioner_name, test with specialty, test date_from required, test results capped at 5 per FR-004, test "show more" offset parameter, test no results message)
 
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] [SKILL:epic-fhir] Implement search_practitioners() and search_slots() in backend/app/fhir_client.py (TDD Green: Practitioner.Search by name, PractitionerRole search by specialty, Schedule.Search by actor, Slot.Search by schedule+status+date, fallback strategy if Slot.Search unavailable, return SlotInfo list) — Ref: references/scheduling-flows.md "Search Availability Flow" (full Python implementation: search_practitioner → search_schedules → search_slots chain)
-- [ ] T026 [US2] Implement search_available_slots tool handler in backend/app/tools.py (TDD Green: JSON schema per contracts/api.md, calls fhir_client methods, caps at 5 results, includes offset for pagination, formats as readable string)
-- [ ] T027 [US2] Add search_available_slots tool to agent tools array in backend/app/agent.py
-- [ ] T028 [US2] Add integration tests for slot search conversational flow in backend/tests/test_agent.py (test agent asks for date when missing, test agent returns formatted slots, test "show more" follow-up)
+- [x] T025 [US2] [SKILL:epic-fhir] Implement search_practitioners() and search_slots() in backend/app/fhir_client.py (TDD Green: Practitioner.Search by name, PractitionerRole search by specialty, Schedule.Search by actor, Slot.Search by schedule+status+date, fallback strategy if Slot.Search unavailable, return SlotInfo list) — Ref: references/scheduling-flows.md "Search Availability Flow" (full Python implementation: search_practitioner → search_schedules → search_slots chain)
+- [x] T026 [US2] Implement search_available_slots tool handler in backend/app/tools.py (TDD Green: JSON schema per contracts/api.md, calls fhir_client methods, caps at 5 results, includes offset for pagination, formats as readable string)
+- [x] T027 [US2] Add search_available_slots tool to agent tools array in backend/app/agent.py
+- [x] T028 [US2] Add integration tests for slot search conversational flow in backend/tests/test_agent.py (test agent asks for date when missing, test agent returns formatted slots, test "show more" follow-up)
 
 **Checkpoint**: US1 + US2 functional. Patient can list appointments AND search for available slots independently.
 
@@ -128,15 +128,15 @@ The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc
 
 > **TDD: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T029 [US3] [SKILL:epic-fhir] Add failing tests for create_appointment() to backend/tests/test_fhir_client.py (TDD Red: mock POST /Appointment/$book with Parameters wrapper, test with slot_id + patient_id + practitioner references, test successful creation returns AppointmentInfo, test failure when slot already taken returns error, test FHIR validation error) — Ref: references/endpoints.md "Appointment.$book" (Parameters resource wrapper format, Argonaut Scheduling IG) + references/error-codes.md (422 business rule errors)
-- [ ] T030 [P] [US3] Add failing tests for book_appointment tool in backend/tests/test_tools.py (TDD Red: test requires slot_id, test injects patient_id from session, test returns confirmation with reference ID, test error handling for failed booking)
+- [x] T029 [US3] [SKILL:epic-fhir] Add failing tests for book_appointment() to backend/tests/test_fhir_client.py (TDD Red: mock POST /Appointment/$book with Parameters wrapper, test with slot_id + patient_id + practitioner references, test successful creation returns AppointmentInfo, test failure when slot already taken returns error, test FHIR validation error) — Ref: references/endpoints.md "Appointment.$book" (Parameters resource wrapper format, Argonaut Scheduling IG) + references/error-codes.md (422 business rule errors)
+- [x] T030 [P] [US3] Add failing tests for book_appointment tool in backend/tests/test_tools.py (TDD Red: test requires slot_id, test injects patient_id from session, test returns confirmation with reference ID, test error handling for failed booking)
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] [SKILL:epic-fhir] Implement create_appointment() in backend/app/fhir_client.py (TDD Green: POST /Appointment/$book with Parameters wrapper per Argonaut IG, participant refs for Patient + Practitioner, slot reference, return AppointmentInfo or error) — Ref: references/scheduling-flows.md "Book Appointment Flow" (book_appointment method with idempotency check, slot status verification before booking)
-- [ ] T032 [US3] Implement book_appointment tool handler in backend/app/tools.py (TDD Green: JSON schema per contracts/api.md, calls fhir_client.create_appointment, formats confirmation with reference ID)
-- [ ] T033 [US3] Add book_appointment tool to agent tools array in backend/app/agent.py
-- [ ] T034 [US3] Add integration tests for booking flow in backend/tests/test_agent.py (test agent shows summary and asks confirmation before calling book_appointment, test agent handles declined confirmation, test agent handles booking failure gracefully)
+- [x] T031 [US3] [SKILL:epic-fhir] Implement book_appointment() in backend/app/fhir_client.py (TDD Green: POST /Appointment/$book with Parameters wrapper per Argonaut IG, participant refs for Patient + Practitioner, slot reference, return AppointmentInfo or error) — Ref: references/scheduling-flows.md "Book Appointment Flow" (book_appointment method with idempotency check, slot status verification before booking)
+- [x] T032 [US3] Implement book_appointment tool handler in backend/app/tools.py (TDD Green: JSON schema per contracts/api.md, calls fhir_client.create_appointment, formats confirmation with reference ID)
+- [x] T033 [US3] Add book_appointment tool to agent tools array in backend/app/agent.py
+- [x] T034 [US3] Add integration tests for booking flow in backend/tests/test_agent.py (test agent shows summary and asks confirmation before calling book_appointment, test agent handles declined confirmation, test agent handles booking failure gracefully)
 
 **Checkpoint**: US1 + US2 + US3 functional. Full search-and-book flow works end-to-end.
 
@@ -152,15 +152,15 @@ The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc
 
 > **TDD: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T035 [US4] [SKILL:epic-fhir] Add failing tests for cancel_appointment() to backend/tests/test_fhir_client.py (TDD Red: mock GET /Appointment/{id} then PUT /Appointment/{id} with status=cancelled, test successful cancellation, test appointment not found, test already cancelled) — Ref: references/endpoints.md "Appointment Cancel (via Update)" (no $cancel op — must GET full resource, change status, PUT back) + references/error-codes.md (409 Conflict on version mismatch)
-- [ ] T036 [P] [US4] Add failing tests for cancel_appointment tool in backend/tests/test_tools.py (TDD Red: test requires appointment_id, test returns cancellation confirmation, test error handling)
+- [x] T035 [US4] [SKILL:epic-fhir] Add failing tests for cancel_appointment() to backend/tests/test_fhir_client.py (TDD Red: mock GET /Appointment/{id} then PUT /Appointment/{id} with status=cancelled, test successful cancellation, test appointment not found, test already cancelled) — Ref: references/endpoints.md "Appointment Cancel (via Update)" (no $cancel op — must GET full resource, change status, PUT back) + references/error-codes.md (409 Conflict on version mismatch)
+- [x] T036 [P] [US4] Add failing tests for cancel_appointment tool in backend/tests/test_tools.py (TDD Red: test requires appointment_id, test returns cancellation confirmation, test error handling)
 
 ### Implementation for User Story 4
 
-- [ ] T037 [US4] [SKILL:epic-fhir] Implement cancel_appointment() in backend/app/fhir_client.py (TDD Green: GET current appointment, PUT with status=cancelled — full resource required, return updated AppointmentInfo or error) — Ref: references/scheduling-flows.md "Cancel Appointment Flow" (read_appointment → change status → PUT full resource)
-- [ ] T038 [US4] Implement cancel_appointment tool handler in backend/app/tools.py (TDD Green: JSON schema per contracts/api.md, calls fhir_client.cancel_appointment, formats confirmation)
-- [ ] T039 [US4] Add cancel_appointment tool to agent tools array in backend/app/agent.py
-- [ ] T040 [US4] Add integration tests for cancellation flow in backend/tests/test_agent.py (test agent asks confirmation before cancelling, test agent disambiguates when multiple appointments match, test agent handles cancellation failure)
+- [x] T037 [US4] [SKILL:epic-fhir] Implement cancel_appointment() in backend/app/fhir_client.py (TDD Green: GET current appointment, PUT with status=cancelled — full resource required, return updated AppointmentInfo or error) — Ref: references/scheduling-flows.md "Cancel Appointment Flow" (read_appointment → change status → PUT full resource)
+- [x] T038 [US4] Implement cancel_appointment tool handler in backend/app/tools.py (TDD Green: JSON schema per contracts/api.md, calls fhir_client.cancel_appointment, formats confirmation)
+- [x] T039 [US4] Add cancel_appointment tool to agent tools array in backend/app/agent.py
+- [x] T040 [US4] Add integration tests for cancellation flow in backend/tests/test_agent.py (test agent asks confirmation before cancelling, test agent disambiguates when multiple appointments match, test agent handles cancellation failure)
 
 **Checkpoint**: All four user stories independently functional and testable.
 
@@ -170,10 +170,10 @@ The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc
 
 **Purpose**: Edge cases, error handling, documentation, and final validation
 
-- [ ] T041 [P] [SKILL:epic-fhir] Add edge case tests in backend/tests/test_edge_cases.py (token expiry mid-conversation returns 401, FHIR timeout returns friendly message, 429 retry exhaustion returns friendly message, past-date slot search rejected, ambiguous intent triggers clarification, concurrent slot booking failure handled) — Ref: references/error-codes.md (full error code table + retry_with_backoff pattern + troubleshooting guide for OAuth, search, and booking issues)
-- [ ] T042 [P] [SKILL:epic-fhir] Implement edge case handlers across modules: token expiry check in chat route, friendly error wrapper in agent.py for all exceptions per FR-011/SC-006 — Ref: SKILL.md "Error Handling" (OperationOutcome parsing) + references/error-codes.md "Rate Limiting" (exponential backoff implementation)
-- [ ] T043 [P] Create README.md with project overview, architecture diagram (text), setup instructions, and sandbox test credentials reference
-- [ ] T044 Run quickstart.md verification checklist: backend starts, auth redirects, chat responds, frontend works, all tests pass
+- [x] T041 [P] [SKILL:epic-fhir] Add edge case tests in backend/tests/test_edge_cases.py (token expiry mid-conversation returns 401, FHIR timeout returns friendly message, 429 retry exhaustion returns friendly message, past-date slot search rejected, ambiguous intent triggers clarification, concurrent slot booking failure handled) — Ref: references/error-codes.md (full error code table + retry_with_backoff pattern + troubleshooting guide for OAuth, search, and booking issues)
+- [x] T042 [P] [SKILL:epic-fhir] Implement edge case handlers across modules: token expiry check in chat route, friendly error wrapper in agent.py for all exceptions per FR-011/SC-006 — Ref: SKILL.md "Error Handling" (OperationOutcome parsing) + references/error-codes.md "Rate Limiting" (exponential backoff implementation)
+- [x] T043 [P] Create README.md with project overview, architecture diagram (text), setup instructions, and sandbox test credentials reference
+- [x] T044 Run quickstart.md verification checklist: backend starts, auth redirects, chat responds, frontend works, all tests pass
 
 ---
 

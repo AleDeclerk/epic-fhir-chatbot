@@ -105,14 +105,14 @@ backend/
 │   ├── test_tools.py        # Integration tests (tool handlers)
 │   ├── test_agent.py        # Agent orchestration tests
 │   ├── test_auth.py         # OAuth flow tests
-│   └── test_chat.py         # API endpoint tests
+│   ├── test_chat.py         # API endpoint tests
+│   └── test_edge_cases.py   # Edge case tests (token expiry, timeouts, rate limits)
 ├── requirements.txt
 └── .env.example
 
 frontend/
 └── index.html               # React 18 SPA (CDN, single file)
 
-.env.example
 .gitignore
 README.md
 CLAUDE.md

@@ -30,18 +30,27 @@ strategy and log the discovery.
 
 ## R2: Appointment Booking in R4
 
-**Decision**: Use `POST /Appointment` (standard FHIR Create) with
-`status: booked`, referencing Slot, Patient, and Practitioner.
+**Decision**: Use `POST /Appointment/$book` with a `Parameters`
+resource wrapper per the Argonaut Scheduling IG. The wrapper
+contains an `appt-resource` parameter with the full Appointment
+resource (status, slot reference, participant references).
 
-**Rationale**: `Appointment.$book` exists only in STU3. For R4, Epic
-supports `Appointment.Create`. The payload must include:
-- `status`: `"booked"`
-- `participant`: references to Patient and Practitioner
-- `slot`: reference to the selected Slot (if available)
-- `start` / `end`: appointment time window
+**Rationale**: Although `$book` originated in STU3, the Argonaut
+Scheduling IG defines it for R4 as well, and Epic's sandbox
+accepts the `Parameters`-wrapped `$book` endpoint. This approach
+provides atomic slot verification + appointment creation in a single
+call, preventing race conditions.
+
+**Payload structure**:
+- `resourceType`: `"Parameters"`
+- `parameter[0].name`: `"appt-resource"`
+- `parameter[0].resource`: Appointment with `status: "booked"`,
+  `slot` reference, and `participant` references for Patient +
+  Practitioner
 
 **Alternatives considered**:
-- `$book` operation (rejected: STU3 only)
+- Standard `POST /Appointment` (viable but lacks atomic slot check)
+- STU3 `$find` + `$book` (rejected: spec requires R4 base URL)
 
 ## R3: OAuth Architecture — Confidential Client
 
@@ -117,7 +126,7 @@ be granted in patient-standalone context. Verify empirically.
   all `tool_result` blocks in one user message
 
 **Tool definitions**: 4 tools with JSON schema, rich descriptions
-(3-4 sentences each). Use `strict: true` for schema validation.
+(3-4 sentences each).
 
 ## R6: Model Selection
 

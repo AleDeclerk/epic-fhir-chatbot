@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turnos Médicos - Chatbot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const API_BASE = "http://localhost:8000";
+
+    function App() {
+      const [messages, setMessages] = React.useState([]);
+      const [input, setInput] = React.useState("");
+      const [loading, setLoading] = React.useState(false);
+      const [authStatus, setAuthStatus] = React.useState(null);
+      const messagesEndRef = React.useRef(null);
+
+      React.useEffect(() => {
+        checkAuth();
+      }, []);
+
+      React.useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, [messages]);
+
+      async function checkAuth() {
+        try {
+          const resp = await fetch(`${API_BASE}/auth/status`, {
+            credentials: "include",
+          });
+          const data = await resp.json();
+          setAuthStatus(data);
+        } catch {
+          setAuthStatus({ authenticated: false });
+        }
+      }
+
+      function handleLogin() {
+        window.location.href = `${API_BASE}/auth/login`;
+      }
+
+      async function handleLogout() {
+        await fetch(`${API_BASE}/auth/logout`, {
+          method: "POST",
+          credentials: "include",
+        });
+        setAuthStatus({ authenticated: false });
+        setMessages([]);
+      }
+
+      async function sendMessage(e) {
+        e.preventDefault();
+        if (!input.trim() || loading) return;
+
+        const userMessage = { role: "user", content: input };
+        const updatedMessages = [...messages, userMessage];
+        setMessages(updatedMessages);
+        setInput("");
+        setLoading(true);
+
+        try {
+          // Cap history at 20 most recent messages
+          const history = updatedMessages.slice(-20, -1);
+
+          const resp = await fetch(`${API_BASE}/api/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              message: input,
+              history: history,
+            }),
+          });
+
+          if (resp.status === 401) {
+            setAuthStatus({ authenticated: false });
+            setMessages(prev => [...prev, {
+              role: "assistant",
+              content: "Tu sesión expiró. Por favor iniciá sesión de nuevo.",
+            }]);
+            return;
+          }
+
+          const data = await resp.json();
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: data.message || "No pude procesar tu mensaje.",
+          }]);
+        } catch {
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: "Error de conexión. Verificá que el servidor esté activo.",
+          }]);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div className="max-w-2xl mx-auto p-4 flex flex-col h-screen">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4 pb-4 border-b">
+            <h1 className="text-xl font-bold text-gray-800">
+              Turnos Médicos
+            </h1>
+            <div className="flex items-center gap-3">
+              {authStatus?.authenticated ? (
+                <>
+                  <span className="text-sm text-green-600">
+                    {authStatus.patient_name || "Conectado"}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                  >
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleLogin}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Iniciar sesión
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+            {messages.length === 0 && (
+              <div className="text-center text-gray-400 mt-20">
+                <p className="text-lg">¡Hola! Soy tu asistente de turnos.</p>
+                <p className="text-sm mt-2">
+                  Podés preguntarme por tus turnos, buscar disponibilidad,
+                  reservar o cancelar.
+                </p>
+              </div>
+            )}
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[80%] px-4 py-2 rounded-lg whitespace-pre-wrap ${
+                    msg.role === "user"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white text-gray-800 border"
+                  }`}
+                >
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="bg-white border px-4 py-2 rounded-lg text-gray-400">
+                  Pensando...
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <form onSubmit={sendMessage} className="flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={
+                authStatus?.authenticated
+                  ? "Escribí tu mensaje..."
+                  : "Iniciá sesión para chatear"
+              }
+              disabled={!authStatus?.authenticated || loading}
+              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+            />
+            <button
+              type="submit"
+              disabled={!authStatus?.authenticated || loading || !input.trim()}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Enviar
+            </button>
+          </form>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

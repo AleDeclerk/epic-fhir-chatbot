@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-fhir-appointment-chatbot`
 **Created**: 2026-03-16
-**Status**: Draft
+**Status**: Implemented
 **Input**: Chatbot conversacional para gestionar turnos medicos via Epic FHIR R4
 
 ## Clarifications
@@ -241,8 +241,8 @@ self-service cancellation tool.
   practitioner, and status.
 - **FR-009**: The system MUST ask clarifying questions when the patient's
   message lacks required information (e.g., missing date for a search).
-- **FR-010**: The system MUST respond in the same language the patient
-  uses (Spanish for MVP).
+- **FR-010**: The system MUST respond in Spanish for the MVP. Future
+  versions may support detecting and matching the patient's language.
 - **FR-011**: The system MUST never display raw error messages, stack
   traces, or technical details to the patient.
 - **FR-012**: The system MUST log all FHIR API interactions without
