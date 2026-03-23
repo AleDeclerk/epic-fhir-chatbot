@@ -62,7 +62,7 @@ All FHIR errors return an `OperationOutcome` resource:
 
 **Problem: Authorization redirects but fails silently**
 - Cause: Missing `aud` parameter in authorize request
-- Fix: Add `aud={FHIR_BASE_URL}` — must be the exact FHIR R4 base URL
+- Fix: Add `aud={FHIR_BASE_URL}` — must be the exact FHIR base URL
 
 **Problem: Token exchange returns 400**
 - Cause: `redirect_uri` doesn't match exactly (trailing slash, different port)

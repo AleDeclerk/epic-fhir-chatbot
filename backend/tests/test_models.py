@@ -8,14 +8,14 @@ class TestChatMessage:
     def test_valid_user_message(self):
         from app.models import ChatMessage
 
-        msg = ChatMessage(role="user", content="Hola")
+        msg = ChatMessage(role="user", content="Hello")
         assert msg.role == "user"
-        assert msg.content == "Hola"
+        assert msg.content == "Hello"
 
     def test_valid_assistant_message(self):
         from app.models import ChatMessage
 
-        msg = ChatMessage(role="assistant", content="Buenos días")
+        msg = ChatMessage(role="assistant", content="Good morning")
         assert msg.role == "assistant"
 
     def test_invalid_role_rejected(self):
@@ -31,10 +31,10 @@ class TestChatRequest:
         from app.models import ChatRequest, ChatMessage
 
         req = ChatRequest(
-            message="¿Qué turnos tengo?",
-            history=[ChatMessage(role="user", content="Hola")],
+            message="What appointments do I have?",
+            history=[ChatMessage(role="user", content="Hello")],
         )
-        assert req.message == "¿Qué turnos tengo?"
+        assert req.message == "What appointments do I have?"
         assert len(req.history) == 1
 
     def test_history_max_20(self):
@@ -56,8 +56,8 @@ class TestChatResponse:
     def test_valid_response(self):
         from app.models import ChatResponse
 
-        resp = ChatResponse(message="Tus turnos son...")
-        assert resp.message == "Tus turnos son..."
+        resp = ChatResponse(message="Your appointments are...")
+        assert resp.message == "Your appointments are..."
 
 
 class TestSlotInfo:

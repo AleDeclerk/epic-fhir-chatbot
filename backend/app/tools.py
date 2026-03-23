@@ -12,9 +12,9 @@ TOOL_SCHEMAS = [
     {
         "name": "list_appointments",
         "description": (
-            "Lista los próximos turnos del paciente dentro de los próximos 90 días. "
-            "Usa esta herramienta cuando el paciente pregunta por sus turnos, citas o "
-            "próximas visitas. Devuelve fecha, hora, médico y estado de cada turno."
+            "Lists the patient's upcoming appointments within the next 90 days. "
+            "Use this tool when the patient asks about their appointments, visits, or "
+            "upcoming schedule. Returns the date, time, practitioner, and status of each appointment."
         ),
         "input_schema": {
             "type": "object",
@@ -22,7 +22,7 @@ TOOL_SCHEMAS = [
                 "status": {
                     "type": "string",
                     "enum": ["booked", "cancelled", "all"],
-                    "description": "Filtro de estado (default: booked)",
+                    "description": "Status filter (default: booked)",
                 },
             },
             "required": [],
@@ -31,28 +31,28 @@ TOOL_SCHEMAS = [
     {
         "name": "search_available_slots",
         "description": (
-            "Busca horarios disponibles para un turno médico. Usa esta herramienta "
-            "cuando el paciente pide buscar disponibilidad con un médico o especialidad. "
-            "Devuelve una lista de slots libres con fecha, hora y nombre del médico."
+            "Searches for available time slots for a medical appointment. Use this tool "
+            "when the patient asks to search for availability with a practitioner or specialty. "
+            "Returns a list of free slots with date, time, and practitioner name."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
                 "practitioner_name": {
                     "type": "string",
-                    "description": "Nombre del médico a buscar (opcional si se da especialidad)",
+                    "description": "Practitioner name to search for (optional if specialty is given)",
                 },
                 "specialty": {
                     "type": "string",
-                    "description": "Especialidad médica (opcional si se da nombre)",
+                    "description": "Medical specialty (optional if name is given)",
                 },
                 "date_from": {
                     "type": "string",
-                    "description": "Fecha desde en formato ISO 8601 (YYYY-MM-DD)",
+                    "description": "Start date in ISO 8601 format (YYYY-MM-DD)",
                 },
                 "date_to": {
                     "type": "string",
-                    "description": "Fecha hasta en formato ISO 8601 (opcional, default: date_from + 7 días)",
+                    "description": "End date in ISO 8601 format (optional, default: date_from + 7 days)",
                 },
             },
             "required": ["date_from"],
@@ -61,20 +61,20 @@ TOOL_SCHEMAS = [
     {
         "name": "book_appointment",
         "description": (
-            "Reserva un turno en un slot disponible. Usa esta herramienta SOLO después "
-            "de que el paciente haya confirmado explícitamente que quiere reservar. "
-            "Devuelve los detalles del turno confirmado o un error si el slot ya no está disponible."
+            "Books an appointment in an available slot. Use this tool ONLY after "
+            "the patient has explicitly confirmed they want to book. "
+            "Returns the confirmed appointment details or an error if the slot is no longer available."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
                 "slot_id": {
                     "type": "string",
-                    "description": "ID del slot FHIR a reservar",
+                    "description": "FHIR Slot ID to book",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Motivo de la consulta (opcional)",
+                    "description": "Reason for the visit (optional)",
                 },
             },
             "required": ["slot_id"],
@@ -83,16 +83,16 @@ TOOL_SCHEMAS = [
     {
         "name": "cancel_appointment",
         "description": (
-            "Cancela un turno existente del paciente. Usa esta herramienta SOLO después "
-            "de que el paciente haya confirmado explícitamente que quiere cancelar. "
-            "Cambia el estado del turno a cancelado."
+            "Cancels an existing patient appointment. Use this tool ONLY after "
+            "the patient has explicitly confirmed they want to cancel. "
+            "Changes the appointment status to cancelled."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
                 "appointment_id": {
                     "type": "string",
-                    "description": "ID FHIR del appointment a cancelar",
+                    "description": "FHIR Appointment ID to cancel",
                 },
             },
             "required": ["appointment_id"],
@@ -106,17 +106,17 @@ def _extract_practitioner_name(appointment: dict) -> str:
     for p in appointment.get("participant", []):
         ref = p.get("actor", {}).get("reference", "")
         if "Practitioner" in ref:
-            return p["actor"].get("display", "Médico")
-    return "Médico"
+            return p["actor"].get("display", "Practitioner")
+    return "Practitioner"
 
 
 def _format_appointment(appt: dict) -> str:
     """Format a single appointment for display."""
     practitioner = _extract_practitioner_name(appt)
-    start = appt.get("start", "Fecha no disponible")
-    status = appt.get("status", "desconocido")
+    start = appt.get("start", "Date not available")
+    status = appt.get("status", "unknown")
     appt_id = appt.get("id", "")
-    return f"- {start} | {practitioner} | Estado: {status} | ID: {appt_id}"
+    return f"- {start} | {practitioner} | Status: {status} | ID: {appt_id}"
 
 
 async def handle_list_appointments(
@@ -141,16 +141,16 @@ async def handle_list_appointments(
         )
 
         if not appointments:
-            return "No se encontraron turnos próximos en los próximos 90 días."
+            return "No upcoming appointments found in the next 90 days."
 
-        lines = [f"Se encontraron {len(appointments)} turno(s):\n"]
+        lines = [f"Found {len(appointments)} appointment(s):\n"]
         for appt in appointments:
             lines.append(_format_appointment(appt))
         return "\n".join(lines)
 
     except FHIRError as e:
         logger.error("FHIR error listing appointments: %s", e)
-        return "Hubo un problema al consultar tus turnos. Por favor intentá de nuevo."
+        return "There was a problem retrieving your appointments. Please try again."
 
 
 async def handle_search_available_slots(
@@ -168,12 +168,12 @@ async def handle_search_available_slots(
             date_to = (from_date + timedelta(days=7)).isoformat()
 
         if not practitioner_name:
-            return "Necesito el nombre del médico para buscar disponibilidad."
+            return "I need the practitioner's name to search for availability."
 
         # Search practitioner
         practitioners = await fhir_client.search_practitioner(practitioner_name)
         if not practitioners:
-            return f"No se encontró ningún médico con el nombre '{practitioner_name}'."
+            return f"No practitioner found with the name '{practitioner_name}'."
 
         practitioner = practitioners[0]
         practitioner_id = practitioner["id"]
@@ -182,7 +182,7 @@ async def handle_search_available_slots(
         # Search schedules
         schedules = await fhir_client.search_schedules(practitioner_id)
         if not schedules:
-            return f"No se encontraron horarios para {practitioner_display}."
+            return f"No schedules found for {practitioner_display}."
 
         # Search free slots
         all_slots = []
@@ -202,27 +202,27 @@ async def handle_search_available_slots(
                 continue
 
         if not all_slots:
-            return f"No hay turnos disponibles para {practitioner_display} en el período indicado."
+            return f"No available appointments for {practitioner_display} in the specified period."
 
         # Cap at 5 results
         all_slots.sort(key=lambda s: s.get("start", ""))
         display_slots = all_slots[:5]
 
-        lines = [f"Se encontraron {len(all_slots)} turnos disponibles (mostrando {len(display_slots)}):\n"]
+        lines = [f"Found {len(all_slots)} available slot(s) (showing {len(display_slots)}):\n"]
         for slot in display_slots:
             start = slot.get("start", "")
             end = slot.get("end", "")
             slot_id = slot.get("id", "")
-            lines.append(f"- {start} a {end} | {practitioner_display} | Slot ID: {slot_id}")
+            lines.append(f"- {start} to {end} | {practitioner_display} | Slot ID: {slot_id}")
 
         if len(all_slots) > 5:
-            lines.append(f"\nHay {len(all_slots) - 5} turnos más disponibles. Pedime 'mostrar más' para verlos.")
+            lines.append(f"\nThere are {len(all_slots) - 5} more available slots. Ask me to 'show more' to see them.")
 
         return "\n".join(lines)
 
     except FHIRError as e:
         logger.error("FHIR error searching slots: %s", e)
-        return "Hubo un problema al buscar disponibilidad. Por favor intentá de nuevo."
+        return "There was a problem searching for availability. Please try again."
 
 
 async def handle_book_appointment(
@@ -242,13 +242,13 @@ async def handle_book_appointment(
             practitioner_id="",  # Will be extracted from slot context
         )
 
-        appt_id = result.get("id", "desconocido")
+        appt_id = result.get("id", "unknown")
         start = result.get("start", "")
-        return f"Turno reservado exitosamente. ID: {appt_id}, Fecha: {start}"
+        return f"Appointment booked successfully. ID: {appt_id}, Date: {start}"
 
     except FHIRError as e:
         logger.error("FHIR error booking appointment: %s", e)
-        return "No se pudo reservar el turno. Es posible que el slot ya no esté disponible."
+        return "The appointment could not be booked. The slot may no longer be available."
 
 
 async def handle_cancel_appointment(
@@ -260,11 +260,11 @@ async def handle_cancel_appointment(
     try:
         appointment_id = tool_input["appointment_id"]
         result = await fhir_client.cancel_appointment(appointment_id)
-        return f"Turno {appointment_id} cancelado exitosamente."
+        return f"Appointment {appointment_id} cancelled successfully."
 
     except FHIRError as e:
         logger.error("FHIR error cancelling appointment: %s", e)
-        return "No se pudo cancelar el turno. Por favor intentá de nuevo."
+        return "The appointment could not be cancelled. Please try again."
 
 
 # Map tool names to handlers

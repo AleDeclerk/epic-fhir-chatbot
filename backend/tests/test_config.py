@@ -9,7 +9,7 @@ class TestSettings:
 
     def test_settings_loads_all_required_fields(self, mock_settings):
         """All required fields are populated."""
-        assert mock_settings.EPIC_FHIR_BASE_URL == "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4"
+        assert mock_settings.EPIC_FHIR_BASE_URL == "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3"
         assert mock_settings.EPIC_CLIENT_ID == "test-client-id"
         assert mock_settings.EPIC_CLIENT_SECRET == "test-client-secret"
         assert mock_settings.EPIC_REDIRECT_URI == "http://localhost:8000/auth/callback"
@@ -43,5 +43,8 @@ class TestSettings:
         assert "patient/Patient.read" in scopes
         assert "patient/Appointment.read" in scopes
         assert "patient/Appointment.write" in scopes
+        assert "patient/Practitioner.read" in scopes
+        assert "patient/Slot.read" in scopes
+        assert "patient/Schedule.read" in scopes
         assert "launch/patient" in scopes
         assert "openid" in scopes

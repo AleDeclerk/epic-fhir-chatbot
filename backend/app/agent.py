@@ -5,48 +5,49 @@ import logging
 import anthropic
 
 from app.fhir_client import EpicFHIRClient
+from app.mock_fhir import MockFHIRClient
 from app.tools import TOOL_SCHEMAS, TOOL_HANDLERS
 
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """\
-<identidad>
-Sos un asistente virtual de turnos médicos. Ayudás a pacientes a gestionar sus \
-turnos: ver próximos turnos, buscar disponibilidad, reservar y cancelar turnos.
-</identidad>
+<identity>
+You are a virtual medical appointment assistant. You help patients manage their \
+appointments: view upcoming appointments, search for availability, book, and cancel appointments.
+</identity>
 
-<idioma>
-Siempre respondé en español. Usá un tono amable y profesional.
-</idioma>
+<language>
+Always respond in English. Use a friendly and professional tone.
+</language>
 
-<reglas>
-- Nunca mostrés errores técnicos al paciente. Si algo falla, decí que hubo un \
-problema y pedí que intente de nuevo.
-- Nunca inventés datos. Solo mostrá información que venga de las herramientas.
-- Si no entendés lo que el paciente pide, pedí que aclare.
-- Sé conciso pero completo en las respuestas.
-</reglas>
+<rules>
+- Never show technical errors to the patient. If something fails, say there was a \
+problem and ask them to try again.
+- Never make up data. Only show information that comes from the tools.
+- If you don't understand what the patient is asking, ask them to clarify.
+- Be concise but thorough in your responses.
+</rules>
 
-<confirmacion>
-ANTES de reservar o cancelar un turno, SIEMPRE mostrá un resumen y pedí \
-confirmación explícita del paciente. Nunca ejecutes book_appointment ni \
-cancel_appointment sin confirmación previa.
-</confirmacion>
+<confirmation>
+BEFORE booking or cancelling an appointment, ALWAYS show a summary and ask for \
+explicit confirmation from the patient. Never execute book_appointment or \
+cancel_appointment without prior confirmation.
+</confirmation>
 
-<errores>
-Si una herramienta devuelve un error, respondé con un mensaje amigable:
-- "No pude consultar tus turnos en este momento. ¿Podés intentar de nuevo?"
-- "No encontré disponibilidad para esa fecha. ¿Querés probar otro día?"
-- "No se pudo completar la reserva. El horario podría ya no estar disponible."
-</errores>
+<errors>
+If a tool returns an error, respond with a friendly message:
+- "I couldn't check your appointments right now. Can you try again?"
+- "I didn't find availability for that date. Would you like to try another day?"
+- "The booking couldn't be completed. The time slot may no longer be available."
+</errors>
 """
 
 TOOL_DEFINITIONS = TOOL_SCHEMAS
 
 
-def get_anthropic_client() -> anthropic.Anthropic:
+def get_anthropic_client(api_key: str | None = None) -> anthropic.Anthropic:
     """Get Anthropic client. Separated for test patching."""
-    return anthropic.Anthropic()
+    return anthropic.Anthropic(api_key=api_key)
 
 
 async def execute_tool(
@@ -59,7 +60,7 @@ async def execute_tool(
     handler = TOOL_HANDLERS.get(tool_name)
     if not handler:
         logger.error("Unknown tool: %s", tool_name)
-        return f"Herramienta desconocida: {tool_name}"
+        return f"Unknown tool: {tool_name}"
 
     return await handler(
         tool_input=tool_input,
@@ -87,7 +88,7 @@ async def process_message(
     Returns:
         The agent's final text response.
     """
-    client = get_anthropic_client()
+    client = get_anthropic_client(api_key=settings.ANTHROPIC_API_KEY)
 
     # Build messages array: history + current message
     messages = []
@@ -95,8 +96,9 @@ async def process_message(
         messages.append({"role": msg["role"], "content": msg["content"]})
     messages.append({"role": "user", "content": message})
 
-    # Create FHIR client for tool execution
-    fhir_client = EpicFHIRClient(
+    # Create FHIR client for tool execution (mock in dev mode)
+    is_dev = access_token == "dev-token-not-for-fhir-calls"
+    fhir_client = MockFHIRClient() if is_dev else EpicFHIRClient(
         base_url=settings.EPIC_FHIR_BASE_URL,
         access_token=access_token,
     )
@@ -120,7 +122,7 @@ async def process_message(
                     block.text for block in response.content
                     if block.type == "text"
                 ]
-                return " ".join(text_parts) if text_parts else "No tengo una respuesta para eso."
+                return " ".join(text_parts) if text_parts else "I don't have a response for that."
 
             if response.stop_reason == "tool_use":
                 # Add assistant message with tool_use blocks
@@ -155,7 +157,7 @@ async def process_message(
                 # Add tool results as user message
                 messages.append({"role": "user", "content": tool_results})
 
-        return "Lo siento, no pude completar tu consulta. Por favor intentá de nuevo."
+        return "Sorry, I couldn't complete your request. Please try again."
 
     finally:
         await fhir_client.close()

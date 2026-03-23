@@ -21,7 +21,7 @@
 
 **Installed at**: `.claude/skills/epic-fhir/`
 
-The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc-claude-skills) provides verified reference material for Epic FHIR R4 integration. It includes OAuth 2.0 / SMART on FHIR patterns, FHIR endpoint reference with request/response examples, async Python client (httpx + FastAPI) code, scheduling workflows ($find, $book, cancel via PUT), and Epic-specific error codes with troubleshooting.
+The `epic-fhir` skill from [hsc-claude-skills](https://github.com/AleDeclerk/hsc-claude-skills) provides verified reference material for Epic FHIR STU3 integration. It includes OAuth 2.0 / SMART on FHIR patterns, FHIR endpoint reference with request/response examples, async Python client (httpx + FastAPI) code, scheduling workflows ($find, $book, cancel via PUT), and Epic-specific error codes with troubleshooting.
 
 **Key references inside the skill:**
 

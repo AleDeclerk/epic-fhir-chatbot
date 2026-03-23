@@ -39,7 +39,7 @@ Required variables:
 
 ```
 # Epic FHIR
-EPIC_FHIR_BASE_URL=https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4
+EPIC_FHIR_BASE_URL=https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3
 EPIC_CLIENT_ID=<your-non-production-client-id>
 EPIC_CLIENT_SECRET=<your-client-secret>
 EPIC_REDIRECT_URI=http://localhost:8000/auth/callback

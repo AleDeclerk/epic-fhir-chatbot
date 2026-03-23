@@ -39,7 +39,7 @@ class TestTokenExpiry:
             client.cookies.set("session_id", "expired")
             resp = await client.post(
                 "/api/chat",
-                json={"message": "Hola", "history": []},
+                json={"message": "Hello", "history": []},
             )
             assert resp.status_code == 401
 
@@ -64,7 +64,7 @@ class TestFHIRTimeoutHandling:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "problema" in result.lower() or "error" in result.lower()
+        assert "problem" in result.lower() or "error" in result.lower()
 
 
 class TestRateLimitExhaustion:
@@ -82,7 +82,7 @@ class TestRateLimitExhaustion:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "problema" in result.lower()
+        assert "problem" in result.lower()
 
 
 class TestFHIRAuthErrorHandling:
@@ -100,4 +100,4 @@ class TestFHIRAuthErrorHandling:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "problema" in result.lower()
+        assert "problem" in result.lower()

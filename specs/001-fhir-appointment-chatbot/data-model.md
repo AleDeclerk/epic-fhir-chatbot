@@ -5,7 +5,7 @@
 
 ## Overview
 
-This system does NOT have its own database. All entities are FHIR R4
+This system does NOT have its own database. All entities are FHIR STU3
 resources retrieved from the Epic sandbox. The data model documents
 the FHIR resources used, their key fields, relationships, and the
 internal Pydantic models that represent them in the backend.

@@ -1,7 +1,7 @@
 # Epic FHIR Chatbot
 
 A conversational chatbot that lets patients manage medical appointments
-using natural language. It connects to Epic's FHIR R4 sandbox API
+using natural language. It connects to Epic's FHIR STU3 sandbox API
 through a Claude agent with tool calling.
 
 ## What It Does
@@ -14,12 +14,12 @@ A patient opens the chat, types in Spanish, and can:
 - **Cancel** — "Cancela mi turno del jueves"
 
 The chatbot interprets the intent, executes operations against
-Epic FHIR R4, and responds in a friendly, non-technical way.
+Epic FHIR STU3, and responds in a friendly, non-technical way.
 
 ## Architecture
 
 ```
-Frontend (React)  -->  Backend (FastAPI)  -->  Claude Agent  -->  Tools  -->  FHIR Client  -->  Epic FHIR R4
+Frontend (React)  -->  Backend (FastAPI)  -->  Claude Agent  -->  Tools  -->  FHIR Client  -->  Epic FHIR STU3
                             |
                       OAuth 2.0 / SMART on FHIR
 ```
@@ -31,7 +31,7 @@ Frontend (React)  -->  Backend (FastAPI)  -->  Claude Agent  -->  Tools  -->  FH
 | Frontend | `frontend/index.html` | Chat UI (React 18 + Tailwind via CDN) |
 | API | `backend/app/routes/chat.py` | POST /api/chat, validation, session |
 | Agent | `backend/app/agent.py` | Claude with tool calling, Spanish system prompt |
-| FHIR Client | `backend/app/fhir_client.py` | HTTP adapter for Epic FHIR R4 |
+| FHIR Client | `backend/app/fhir_client.py` | HTTP adapter for Epic FHIR STU3 |
 
 ## Tech Stack
 
@@ -39,7 +39,7 @@ Frontend (React)  -->  Backend (FastAPI)  -->  Claude Agent  -->  Tools  -->  FH
 - **AI**: Anthropic Claude API (claude-sonnet-4-20250514) with tool calling
 - **Frontend**: React 18 + Tailwind CSS (single HTML file, CDN)
 - **Auth**: OAuth 2.0 / SMART on FHIR (standalone launch, confidential client)
-- **FHIR**: Epic sandbox (`fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/`)
+- **FHIR**: Epic sandbox (`fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3/`)
 - **Testing**: pytest, pytest-asyncio, pytest-httpx
 
 ## Project Structure
@@ -51,7 +51,7 @@ backend/
     main.py              # FastAPI app, CORS, rate limiting
     config.py            # Pydantic Settings, environment variables
     auth.py              # OAuth 2.0 / SMART on FHIR
-    fhir_client.py       # Epic FHIR R4 adapter
+    fhir_client.py       # Epic FHIR STU3 adapter
     agent.py             # Claude agent orchestrator
     tools.py             # Tool definitions + handlers
     models.py            # Pydantic request/response models
@@ -109,7 +109,7 @@ python -m http.server 5173
 
 ```bash
 # Epic FHIR
-EPIC_FHIR_BASE_URL=https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4
+EPIC_FHIR_BASE_URL=https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3
 EPIC_CLIENT_ID=<your-non-production-client-id>
 EPIC_CLIENT_SECRET=<your-client-secret>
 EPIC_REDIRECT_URI=http://localhost:8000/auth/callback

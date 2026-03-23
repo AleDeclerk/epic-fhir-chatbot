@@ -3,7 +3,7 @@
 **Feature Branch**: `001-fhir-appointment-chatbot`
 **Created**: 2026-03-16
 **Status**: Implemented
-**Input**: Chatbot conversacional para gestionar turnos medicos via Epic FHIR R4
+**Input**: Chatbot conversacional para gestionar turnos medicos via Epic FHIR STU3
 
 ## Clarifications
 
@@ -273,9 +273,10 @@ self-service cancellation tool.
 
 ### Assumptions
 
-- The Epic FHIR R4 sandbox at `fhir.epic.com` is available and supports
+- The Epic FHIR STU3 sandbox at `fhir.epic.com` is available and supports
   the required FHIR resources (Patient, Practitioner, Slot, Schedule,
   Appointment).
+- Scheduling operations ($find, $book) and resources (Slot, Schedule) require STU3. Epic has not ported these to R4.
 - The sandbox provides test patient credentials (fhirjason / epicepic1)
   that grant the necessary OAuth scopes.
 - The chatbot handles one patient per session (the authenticated user).

@@ -7,12 +7,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 class TestAgentSystemPrompt:
     """T016: Tests for agent system prompt and tool loop."""
 
-    def test_system_prompt_is_in_spanish(self):
-        """System prompt must be in Spanish per FR-010."""
+    def test_system_prompt_is_in_english(self):
+        """System prompt must be in English."""
         from app.agent import SYSTEM_PROMPT
 
-        # Check for Spanish content markers
-        assert any(word in SYSTEM_PROMPT.lower() for word in ["paciente", "turno", "médico"])
+        # Check for English content markers
+        assert any(word in SYSTEM_PROMPT.lower() for word in ["patient", "appointment", "practitioner"])
 
     def test_system_prompt_has_xml_tags(self):
         """System prompt uses XML tags per research.md R7."""
@@ -60,7 +60,7 @@ class TestAgenticLoop:
         mock_response = MagicMock()
         mock_response.stop_reason = "end_turn"
         mock_response.content = [
-            MagicMock(type="text", text="¡Hola! ¿En qué puedo ayudarte?")
+            MagicMock(type="text", text="Hello! How can I help you?")
         ]
 
         with patch("app.agent.get_anthropic_client") as mock_get_client:
@@ -69,16 +69,16 @@ class TestAgenticLoop:
             mock_get_client.return_value = mock_client
 
             result = await process_message(
-                message="Hola",
+                message="Hello",
                 history=[],
                 patient_id="patient-123",
                 access_token="token-123",
                 settings=MagicMock(
                     CLAUDE_MODEL="claude-sonnet-4-20250514",
-                    EPIC_FHIR_BASE_URL="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
+                    EPIC_FHIR_BASE_URL="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3",
                 ),
             )
-            assert "Hola" in result or "ayudar" in result
+            assert "Hello" in result or "help" in result
 
     @pytest.mark.asyncio
     async def test_tool_use_then_end_turn(self):
@@ -99,7 +99,7 @@ class TestAgenticLoop:
         # Second response: end_turn with text
         text_block = MagicMock()
         text_block.type = "text"
-        text_block.text = "No tenés turnos próximos."
+        text_block.text = "You have no upcoming appointments."
 
         second_response = MagicMock()
         second_response.stop_reason = "end_turn"
@@ -113,17 +113,17 @@ class TestAgenticLoop:
                 side_effect=[first_response, second_response]
             )
             mock_get_client.return_value = mock_client
-            mock_exec.return_value = "No se encontraron turnos."
+            mock_exec.return_value = "No upcoming appointments found."
 
             result = await process_message(
-                message="¿Qué turnos tengo?",
+                message="What appointments do I have?",
                 history=[],
                 patient_id="patient-123",
                 access_token="token-123",
                 settings=MagicMock(
                     CLAUDE_MODEL="claude-sonnet-4-20250514",
-                    EPIC_FHIR_BASE_URL="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
+                    EPIC_FHIR_BASE_URL="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3",
                 ),
             )
-            assert "turnos" in result.lower() or "no" in result.lower()
+            assert "appointment" in result.lower() or "no" in result.lower()
             mock_exec.assert_called_once()

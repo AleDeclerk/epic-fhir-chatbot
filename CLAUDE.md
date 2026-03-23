@@ -32,7 +32,7 @@ Python 3.11+: Follow standard conventions
 
 ## Proyecto
 
-Chatbot conversacional para gestión de turnos médicos via Epic FHIR R4 sandbox.
+Chatbot conversacional para gestión de turnos médicos via Epic FHIR STU3 sandbox.
 Stack: FastAPI + Claude API (tool calling) + React.
 
 ## Comandos
@@ -75,7 +75,8 @@ cd frontend && python -m http.server 5173
 
 ## FHIR sandbox
 
-- Base URL: <https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/>
+- Base URL: <https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3/>
+- Note: STU3 is required because Epic's scheduling operations ($find, $book) and resources (Slot, Schedule) are only available in STU3.
 - OAuth authorize: <https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize>
 - OAuth token: <https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token>
 - Test login: fhirjason / epicepic1
@@ -83,7 +84,7 @@ cd frontend && python -m http.server 5173
 
 ## Skills
 
-The `epic-fhir` skill is installed at `.claude/skills/epic-fhir/`. It provides verified reference material for Epic FHIR R4 integration:
+The `epic-fhir` skill is installed at `.claude/skills/epic-fhir/`. It provides verified reference material for Epic FHIR STU3 integration:
 
 - `SKILL.md` — OAuth 2.0 standalone launch flow, Python client pattern, security rules, sandbox gotchas
 - `references/endpoints.md` — FHIR endpoint params and example responses (Patient, Practitioner, Schedule, Slot, Appointment)

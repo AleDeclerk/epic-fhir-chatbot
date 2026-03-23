@@ -62,7 +62,7 @@ class TestLoginRedirect:
 
     @pytest.mark.asyncio
     async def test_login_includes_aud_param(self, auth_client):
-        """The aud parameter MUST be the FHIR base URL (Epic requirement)."""
+        """The aud parameter uses EPIC_FHIR_AUD_URL (R4) for OAuth, falling back to EPIC_FHIR_BASE_URL."""
         app, _ = auth_client
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:

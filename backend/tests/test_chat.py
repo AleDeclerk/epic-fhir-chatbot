@@ -39,7 +39,7 @@ class TestChatEndpoint:
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             resp = await client.post(
                 "/api/chat",
-                json={"message": "Hola", "history": []},
+                json={"message": "Hello", "history": []},
             )
             assert resp.status_code == 401
 
@@ -72,19 +72,19 @@ class TestChatEndpoint:
         }
 
         with patch("app.routes.chat.process_message", new_callable=AsyncMock) as mock_process:
-            mock_process.return_value = "¡Hola! ¿En qué puedo ayudarte?"
+            mock_process.return_value = "Hello! How can I help you?"
 
             transport = ASGITransport(app=chat_app)
             async with AsyncClient(transport=transport, base_url="http://test") as client:
                 client.cookies.set("session_id", "chat-ok")
                 resp = await client.post(
                     "/api/chat",
-                    json={"message": "Hola", "history": []},
+                    json={"message": "Hello", "history": []},
                 )
                 assert resp.status_code == 200
                 data = resp.json()
                 assert "message" in data
-                assert "ayudar" in data["message"]
+                assert "help" in data["message"]
 
         del sessions["chat-ok"]
 

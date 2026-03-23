@@ -1,6 +1,6 @@
 # epic-fhir
 
-> **Claude Agent Skill** — Integrate with Epic's FHIR R4 API for patient scheduling, OAuth 2.0 / SMART on FHIR authentication, and async Python client patterns.
+> **Claude Agent Skill** — Integrate with Epic's FHIR STU3 API for patient scheduling, OAuth 2.0 / SMART on FHIR authentication, and async Python client patterns.
 
 Built for patient-facing appointment chatbots using FastAPI + httpx against Epic's development sandbox.
 
@@ -47,7 +47,7 @@ Claude will automatically discover and use the skill for Epic FHIR-related tasks
 ```python
 import httpx
 
-FHIR_BASE = "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4"
+FHIR_BASE = "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3"
 
 async with httpx.AsyncClient(
     base_url=FHIR_BASE,
@@ -89,7 +89,7 @@ epic-fhir/
 
 | Endpoint | URL |
 |----------|-----|
-| FHIR R4 Base | `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4` |
+| FHIR STU3 Base | `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3` |
 | OAuth Authorize | `https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize` |
 | OAuth Token | `https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token` |
 

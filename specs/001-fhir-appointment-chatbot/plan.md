@@ -8,7 +8,7 @@
 Build a conversational chatbot where patients manage medical
 appointments (list, search, book, cancel) using natural language.
 The backend (FastAPI + Python) orchestrates a Claude agent with tool
-calling that delegates FHIR R4 operations to a decoupled adapter
+calling that delegates FHIR STU3 operations to a decoupled adapter
 communicating with Epic's sandbox. Authentication uses OAuth 2.0
 SMART on FHIR standalone launch (confidential client). The frontend
 is a single-page React chat UI.
@@ -91,7 +91,7 @@ backend/
 │   ├── main.py              # FastAPI app, CORS, lifespan, rate limit
 │   ├── config.py            # Pydantic Settings, env vars
 │   ├── auth.py              # OAuth 2.0 / SMART on FHIR
-│   ├── fhir_client.py       # Epic FHIR R4 adapter
+│   ├── fhir_client.py       # Epic FHIR STU3 adapter
 │   ├── agent.py             # Claude agent orchestrator
 │   ├── tools.py             # Tool definitions + handlers
 │   ├── models.py            # Pydantic request/response models

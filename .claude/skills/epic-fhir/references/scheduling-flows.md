@@ -361,7 +361,7 @@ oauth_states: dict[str, bool] = {}
 
 EPIC_TOKEN_URL = "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token"
 EPIC_AUTHORIZE_URL = "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize"
-FHIR_BASE_URL = "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4"
+FHIR_BASE_URL = "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3"
 CLIENT_ID = "your-non-production-client-id"  # from env var in production
 REDIRECT_URI = "http://localhost:8000/callback"
 

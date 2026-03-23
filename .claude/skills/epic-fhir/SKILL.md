@@ -1,7 +1,7 @@
 ---
 name: epic-fhir
 description: >
-  Technical guide for integrating with Epic's FHIR R4 API, including OAuth 2.0 / SMART on FHIR
+  Technical guide for integrating with Epic's FHIR STU3 API, including OAuth 2.0 / SMART on FHIR
   authentication, CRUD operations on scheduling resources (Appointment, Slot, Schedule), patient
   and practitioner search, and async Python client patterns (FastAPI + httpx).
   Use this skill whenever the user works with Epic FHIR endpoints, implements SMART on FHIR auth,
@@ -12,19 +12,21 @@ description: >
   Do NOT trigger for general Python without FHIR, or for non-Epic healthcare APIs (Cerner, etc.).
 ---
 
-# Epic FHIR R4 Integration
+# Epic FHIR STU3 Integration
 
-Guide for building applications against Epic's FHIR R4 API, focused on the development sandbox and scheduling workflows. The primary use case is a medical appointment chatbot with Python (FastAPI + httpx async).
+Guide for building applications against Epic's FHIR STU3 API, focused on the development sandbox and scheduling workflows. The primary use case is a medical appointment chatbot with Python (FastAPI + httpx async).
 
 ## Sandbox Environment
 
 | Endpoint | URL |
 |----------|-----|
-| FHIR R4 Base | `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4` |
+| FHIR STU3 Base | `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3` |
 | OAuth Authorize | `https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize` |
 | OAuth Token | `https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token` |
 | SMART Config | `{FHIR_BASE}/.well-known/smart-configuration` |
 | Metadata | `{FHIR_BASE}/metadata` |
+
+**Why STU3?** Epic's scheduling operations ($find, $book) and resources (Slot, Schedule) are only available in STU3. R4 only offers Appointment.Read/Search and Practitioner.Search.
 
 **Test credentials:** MyChart sandbox login `fhirjason` / `epicepic1`. Alternative: `fhirdaisy` / `epicepic1`.
 
@@ -228,6 +230,7 @@ Key HTTP status codes:
 - Date params use comparison prefixes: `ge` (>=), `le` (<=), `gt` (>), `lt` (<)
 - References are relative: `"Patient/abc123"`, not the full URL
 - Bundles may be paginated — always check for `link` with `relation: "next"`
+- Scheduling operations ($find, $book, Slot, Schedule) require STU3 — they do not exist in R4
 
 ## Dates and Timezones
 

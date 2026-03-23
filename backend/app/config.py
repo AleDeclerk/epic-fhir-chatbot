@@ -8,6 +8,7 @@ class Settings(BaseSettings):
 
     # Epic FHIR
     EPIC_FHIR_BASE_URL: str
+    EPIC_FHIR_AUD_URL: str = ""  # OAuth aud param (defaults to R4)
     EPIC_CLIENT_ID: str
     EPIC_CLIENT_SECRET: str
     EPIC_REDIRECT_URI: str
@@ -23,6 +24,7 @@ class Settings(BaseSettings):
     # App
     APP_SECRET_KEY: str
     FRONTEND_URL: str
+    DEV_MODE: bool = False  # Enables /auth/dev-login with test patient
 
     @property
     def OAUTH_SCOPES(self) -> str:

@@ -18,14 +18,14 @@ from app.fhir_client import (
 def fhir_client():
     """Create a FHIR client for testing."""
     return EpicFHIRClient(
-        base_url="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
+        base_url="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3",
         access_token="test-token-123",
     )
 
 
 class TestClientInit:
     def test_client_sets_base_url(self, fhir_client):
-        assert str(fhir_client.client.base_url).rstrip("/").endswith("FHIR/R4")
+        assert str(fhir_client.client.base_url).rstrip("/").endswith("FHIR/STU3")
 
     def test_client_sets_auth_header(self, fhir_client):
         assert fhir_client.client.headers["authorization"] == "Bearer test-token-123"

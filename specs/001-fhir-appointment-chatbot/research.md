@@ -3,54 +3,53 @@
 **Date**: 2026-03-16
 **Feature**: 001-fhir-appointment-chatbot
 
-## R1: Epic FHIR R4 Sandbox — Slot & Schedule Availability
+## R1: Epic FHIR STU3 Sandbox — Scheduling API Availability
 
-**Decision**: Plan for R4 using `Appointment.Search` and
-`Appointment.Create`. Slot and Schedule Search are NOT confirmed
-available in R4 on the Epic sandbox (Read-only in STU3, R4 status
-unclear). The FHIR client MUST verify empirically at startup.
+**Decision**: Use STU3 for all scheduling operations. Slot, Schedule,
+$find, and $book are only available in STU3 on Epic's sandbox. R4
+only supports Appointment.Read and Appointment.Search.
 
-**Rationale**: The open.epic.com interface listing shows Slot and
-Schedule as Read-only (STU3). R4 Slot.Search by schedule+status is
-not listed. Epic's preferred scheduling workflow uses `$find`/`$book`
-(STU3 only). For R4, the standard approach is:
-1. `Practitioner.Search` by name to find practitioner ID
-2. `Slot.Search?schedule=Schedule/{id}&status=free` — attempt this
-   first, fall back to alternative if unavailable
-3. Alternative: query `Appointment?practitioner={id}&status=free`
-   or use a time-range scan
+**Rationale**: Testing against the actual fhir.epic.com app registration
+form confirmed that:
+- STU3 offers: Appointment.Read, Appointment.$find, Appointment.$book,
+  Slot.Read, Schedule.Read
+- R4 offers: Appointment.Read, Appointment.Search, Practitioner.Search,
+  Patient.Search — but NO $find, $book, Slot, or Schedule
+- The Argonaut Scheduling IG that defines $find/$book was built on STU3
+  and Epic never ported it to R4
 
 **Alternatives considered**:
-- STU3 `$find` + `$book` (rejected: spec requires R4)
-- Hybrid STU3/R4 (rejected: added complexity, unclear sandbox support)
+- R4 with read-only chatbot (rejected: no booking capability)
+- Hybrid R4/STU3 (rejected: unnecessary complexity, same OAuth endpoints)
+- Backend-services credential for booking (rejected: overkill for MVP)
 
-**Action**: The FHIR client adapter MUST handle the case where
-Slot.Search returns 404 or OperationOutcome. Include a fallback
-strategy and log the discovery.
+**Action**: All FHIR operations use the STU3 base URL:
+`https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3/`
 
-## R2: Appointment Booking in R4
+## R2: Appointment Booking via $find + $book (STU3)
 
-**Decision**: Use `POST /Appointment/$book` with a `Parameters`
-resource wrapper per the Argonaut Scheduling IG. The wrapper
-contains an `appt-resource` parameter with the full Appointment
-resource (status, slot reference, participant references).
+**Decision**: Use `POST /Appointment/$find` to discover availability
+and `POST /Appointment/$book` to create bookings. Both follow the
+Argonaut Scheduling IG and are natively supported in STU3.
 
-**Rationale**: Although `$book` originated in STU3, the Argonaut
-Scheduling IG defines it for R4 as well, and Epic's sandbox
-accepts the `Parameters`-wrapped `$book` endpoint. This approach
-provides atomic slot verification + appointment creation in a single
-call, preventing race conditions.
+**Rationale**: $find is Epic's preferred discovery mechanism. It
+consolidates the Practitioner→Schedule→Slot chain into a single call
+that returns proposed Appointment resources. The server manages
+concurrency, preventing double-booking races.
 
-**Payload structure**:
-- `resourceType`: `"Parameters"`
-- `parameter[0].name`: `"appt-resource"`
-- `parameter[0].resource`: Appointment with `status: "booked"`,
-  `slot` reference, and `participant` references for Patient +
-  Practitioner
+**Booking flow**:
+1. `POST /Appointment/$find` with start, end, provider params
+2. User selects from proposed appointments
+3. `POST /Appointment/$book` with Parameters wrapper containing
+   the selected appointment
+
+**Fallback**: If $find is unavailable for the registered app, fall
+back to the manual chain: Practitioner.Search → Schedule.Search →
+Slot.Search → $book with slot reference.
 
 **Alternatives considered**:
-- Standard `POST /Appointment` (viable but lacks atomic slot check)
-- STU3 `$find` + `$book` (rejected: spec requires R4 base URL)
+- Standard POST /Appointment (rejected: no atomic slot verification)
+- R4 $book (rejected: does not exist in Epic's R4 implementation)
 
 ## R3: OAuth Architecture — Confidential Client
 
@@ -95,7 +94,7 @@ obtain a Non-Production Client ID. There is no pre-registered ID.
 4. Register public key for confidential client auth
 5. Copy Non-Production Client ID
 
-**Scopes to request**:
+**Scopes to request (SMART v1 format for STU3)**:
 ```
 launch/patient openid fhirUser
 patient/Patient.read patient/Practitioner.read
@@ -103,8 +102,14 @@ patient/Appointment.read patient/Appointment.write
 patient/Slot.read patient/Schedule.read
 ```
 
-**Note**: `patient/Slot.read` and `patient/Schedule.read` may not
-be granted in patient-standalone context. Verify empirically.
+**App registration API selections at fhir.epic.com**:
+- Appointment.Read (Appointments) (STU3)
+- Appointment.Search (Appointments) (R4) — for listing
+- Practitioner.Search (R4)
+- Patient.Search (Demographics) (R4)
+
+Note: $find and $book may not appear as selectable APIs in the form.
+They are implicitly available when Appointment APIs are selected.
 
 ## R5: Claude Agent — Tool Calling Architecture
 

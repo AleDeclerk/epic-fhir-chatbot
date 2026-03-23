@@ -57,6 +57,34 @@ def get_settings() -> Settings:
     return Settings()
 
 
+@router.get("/dev-login")
+async def dev_login() -> RedirectResponse:
+    """Create a dev session with Epic's test patient (fhirjason). DEV_MODE only."""
+    settings = get_settings()
+    if not settings.DEV_MODE:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    session_id = secrets.token_urlsafe(32)
+    sessions[session_id] = {
+        "access_token": "dev-token-not-for-fhir-calls",
+        "patient_id": "Tbt3KuCY0B5PSrJvCu2j-PlK.aiHsu2xUjUM8bWpetXoB",
+        "patient_name": "Jason Argonaut (DEV)",
+        "expires_at": time.time() + 86400,
+        "scope": "dev-mode",
+    }
+    logger.info("DEV session created for test patient fhirjason")
+
+    response = RedirectResponse(url=settings.FRONTEND_URL, status_code=307)
+    response.set_cookie(
+        key="session_id",
+        value=session_id,
+        httponly=True,
+        samesite="lax",
+        max_age=86400,
+    )
+    return response
+
+
 @router.get("/login")
 async def login() -> RedirectResponse:
     """Initiate OAuth standalone launch. Redirects to Epic authorize."""
@@ -82,7 +110,7 @@ async def login() -> RedirectResponse:
         "redirect_uri": settings.EPIC_REDIRECT_URI,
         "scope": settings.OAUTH_SCOPES,
         "state": state,
-        "aud": settings.EPIC_FHIR_BASE_URL,
+        "aud": settings.EPIC_FHIR_AUD_URL or settings.EPIC_FHIR_BASE_URL,
         "code_challenge": code_challenge,
         "code_challenge_method": "S256",
     }
@@ -155,17 +183,21 @@ async def callback(code: str, state: str) -> RedirectResponse:
 @router.get("/status")
 async def status(session_id: str | None = Cookie(default=None)) -> dict:
     """Return current authentication status."""
+    settings = get_settings()
+    base = {"dev_mode": settings.DEV_MODE}
+
     if not session_id or session_id not in sessions:
-        return {"authenticated": False}
+        return {**base, "authenticated": False}
 
     session = sessions[session_id]
     remaining = session["expires_at"] - time.time()
 
     if remaining <= 0:
         del sessions[session_id]
-        return {"authenticated": False}
+        return {**base, "authenticated": False}
 
     return {
+        **base,
         "authenticated": True,
         "patient_name": session.get("patient_name", ""),
         "expires_in": int(remaining),

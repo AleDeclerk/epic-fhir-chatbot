@@ -1,8 +1,8 @@
-# Epic FHIR R4 Endpoint Reference
+# Epic FHIR STU3 Endpoint Reference
 
 Complete reference for all FHIR endpoints used in scheduling workflows against Epic's sandbox.
 
-Base URL: `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4`
+Base URL: `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3`
 
 All requests require:
 ```

@@ -1,4 +1,8 @@
-"""Epic FHIR R4 async client adapter."""
+"""Epic FHIR STU3 async client adapter for scheduling workflows.
+
+Uses STU3 because Epic's scheduling operations ($find, $book) and
+resources (Slot, Schedule) are only available in STU3, not R4.
+"""
 
 import asyncio
 import logging
@@ -38,7 +42,7 @@ class FHIRRateLimitError(FHIRError):
 
 
 class EpicFHIRClient:
-    """Async FHIR client for Epic R4 sandbox."""
+    """Async FHIR client for Epic STU3 sandbox (scheduling workflows)."""
 
     _MAX_RETRIES = 2
 
@@ -188,6 +192,31 @@ class EpicFHIRClient:
     async def read_appointment(self, appointment_id: str) -> dict:
         """Read a single appointment by ID."""
         return await self._get(f"/Appointment/{appointment_id}")
+
+    async def find_availability(
+        self,
+        practitioner_id: str,
+        start: str,
+        end: str,
+    ) -> list[dict]:
+        """Search available appointments using $find (STU3 Argonaut IG).
+
+        This is Epic's preferred way to discover bookable slots.
+        Returns proposed Appointment resources.
+        """
+        body = {
+            "resourceType": "Parameters",
+            "parameter": [
+                {"name": "start", "valueDateTime": start},
+                {"name": "end", "valueDateTime": end},
+                {
+                    "name": "provider",
+                    "valueUri": f"Practitioner/{practitioner_id}",
+                },
+            ],
+        }
+        bundle = await self._post("/Appointment/$find", json=body)
+        return self._extract_entries(bundle)
 
     async def book_appointment(
         self,

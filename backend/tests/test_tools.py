@@ -69,7 +69,7 @@ class TestListAppointmentsTool:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "no" in result.lower() or "ningún" in result.lower() or "sin" in result.lower()
+        assert "no" in result.lower() or "not found" in result.lower()
 
     @pytest.mark.asyncio
     async def test_list_appointments_error_returns_friendly_message(self, mock_fhir_client, mock_session):
@@ -84,7 +84,7 @@ class TestListAppointmentsTool:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "error" in result.lower() or "problema" in result.lower()
+        assert "error" in result.lower() or "problem" in result.lower()
 
 
 class TestSearchAvailableSlotsTool:
@@ -143,9 +143,9 @@ class TestSearchAvailableSlotsTool:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        # Should mention "mostrando 5" and "más disponibles"
+        # Should mention "showing 5" and "more available"
         assert "5" in result
-        assert "más" in result.lower()
+        assert "more" in result.lower()
 
     @pytest.mark.asyncio
     async def test_search_no_results_message(self, mock_fhir_client, mock_session):
@@ -163,7 +163,7 @@ class TestSearchAvailableSlotsTool:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "no hay" in result.lower() or "no se encontr" in result.lower()
+        assert "no available" in result.lower() or "not found" in result.lower()
 
 
 class TestBookAppointmentTool:
@@ -212,7 +212,7 @@ class TestBookAppointmentTool:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "no se pudo" in result.lower() or "error" in result.lower()
+        assert "could not" in result.lower() or "error" in result.lower()
 
 
 class TestCancelAppointmentTool:
@@ -244,7 +244,7 @@ class TestCancelAppointmentTool:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "cancelado" in result.lower()
+        assert "cancelled" in result.lower()
 
     @pytest.mark.asyncio
     async def test_cancel_error_returns_friendly_message(self, mock_fhir_client, mock_session):
@@ -259,4 +259,4 @@ class TestCancelAppointmentTool:
             fhir_client=mock_fhir_client,
             patient_id=mock_session["patient_id"],
         )
-        assert "no se pudo" in result.lower() or "problema" in result.lower()
+        assert "could not" in result.lower() or "problem" in result.lower()

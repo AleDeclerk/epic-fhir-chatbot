@@ -28,14 +28,14 @@ async def chat(
     """Process a chat message through the Claude agent."""
     # Check authentication
     if not session_id or session_id not in sessions:
-        raise HTTPException(status_code=401, detail="No estás autenticado. Por favor iniciá sesión.")
+        raise HTTPException(status_code=401, detail="You are not authenticated. Please log in.")
 
     session = sessions[session_id]
 
     # Check token expiry
     if session["expires_at"] <= time.time():
         del sessions[session_id]
-        raise HTTPException(status_code=401, detail="Tu sesión expiró. Por favor iniciá sesión de nuevo.")
+        raise HTTPException(status_code=401, detail="Your session has expired. Please log in again.")
 
     try:
         settings = get_settings()
@@ -55,5 +55,5 @@ async def chat(
         logger.error("Error processing chat: %s", e)
         raise HTTPException(
             status_code=500,
-            detail="Hubo un problema procesando tu mensaje. Por favor intentá de nuevo.",
+            detail="There was a problem processing your message. Please try again.",
         )

@@ -12,7 +12,8 @@ def mock_settings():
     from app.config import Settings
 
     return Settings(
-        EPIC_FHIR_BASE_URL="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
+        EPIC_FHIR_BASE_URL="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/STU3",
+        EPIC_FHIR_AUD_URL="https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
         EPIC_CLIENT_ID="test-client-id",
         EPIC_CLIENT_SECRET="test-client-secret",
         EPIC_REDIRECT_URI="http://localhost:8000/auth/callback",
